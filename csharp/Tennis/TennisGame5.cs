@@ -1,5 +1,3 @@
-using System;
-
 namespace Tennis
 {
     public class TennisGame5 : ITennisGame
@@ -19,62 +17,86 @@ namespace Tennis
         {
             if (playerName == player1Name)
                 player1Score++;
-            else if (playerName == player2Name)
-                player2Score++;
             else
-                throw new ArgumentException("Invalid player name.");
+                player2Score++;
         }
 
         public string GetScore()
         {
+            string result;
+
             if (player1Score == player2Score)
-                return GetTiedScore(player1Score);
-            
-            if (player1Score >= 4 || player2Score >= 4)
-                return GetAdvantageOrWinScore();
-            
-            return GetRegularScore();
-        }
-
-        private static string GetTiedScore(int score)
-        {
-            return score switch
             {
-                0 => "Love-All",
-                1 => "Fifteen-All",
-                2 => "Thirty-All",
-                _ => "Deuce"
-            };
-        }
+                // tie score
+                string tieScore;
+                switch (player1Score)
+                {
+                    case 0:
+                        tieScore = "Love-All";
+                        break;
+                    case 1:
+                        tieScore = "Fifteen-All";
+                        break;
+                    case 2:
+                        tieScore = "Thirty-All";
+                        break;
+                    default:
+                        tieScore = "Deuce";
+                        break;
+                }
 
-        private string GetAdvantageOrWinScore()
-        {
-            var scoreDifference = player1Score - player2Score;
-
-            return scoreDifference switch
+                result = tieScore;
+            }
+            else if (player1Score >= 4 || player2Score >= 4)
             {
-                1 => $"Advantage {player1Name}",
-                -1 => $"Advantage {player2Name}",
-                >= 2 => $"Win for {player1Name}",
-                _ => $"Win for {player2Name}"
-            };
-        }
+                // end-game score
+                string endGameScore;
 
-        private string GetRegularScore()
-        {
-            return $"{GetScoreName(player1Score)}-{GetScoreName(player2Score)}";
-        }
+                switch (player1Score - player2Score)
+                {
+                    case 1:
+                        endGameScore = $"Advantage {player1Name}";
+                        break;
+                    case -1:
+                        endGameScore = $"Advantage {player2Name}";
+                        break;
+                    case >= 2:
+                        endGameScore = $"Win for {player1Name}";
+                        break;
+                    default:
+                        endGameScore = $"Win for {player2Name}";
+                        break;
+                }
 
-        private static string GetScoreName(int score)
-        {
-            return score switch
+                result = endGameScore;
+            }
+            else
             {
-                0 => "Love",
-                1 => "Fifteen",
-                2 => "Thirty",
-                3 => "Forty",
-                _ => throw new ArgumentException("Invalid score.")
-            };
+                // regular score
+                string regularScore;
+
+                var score1 = player1Score switch
+                {
+                    0 => "Love",
+                    1 => "Fifteen",
+                    2 => "Thirty",
+                    _ => "Forty"
+                };
+
+                var score2 = player2Score switch
+                {
+                    0 => "Love",
+                    1 => "Fifteen",
+                    2 => "Thirty",
+                    _ => "Forty"
+                };
+
+                regularScore = $"{score1}-{score2}";
+
+                result = regularScore;
+            }
+
+            return result;
         }
     }
 }
